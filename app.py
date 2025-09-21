@@ -72,15 +72,21 @@ st.subheader("🔎 Key Insights")
 
 # --- Dynamic insights for seasonality ---
 if not seasonality.empty:
-    month_map = {1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun", 
+    month_map = {1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun",
                  7:"Jul", 8:"Aug", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dec"}
+    
     monthly_sales = seasonality.groupby("Month")["Sales"].sum()
-    peak_month = month_map[monthly_sales.idxmax()]
-    peak_value = monthly_sales.max()
-    low_month = month_map[monthly_sales.idxmin()]
-    low_value = monthly_sales.min()
+    peak_month = month_map[int(monthly_sales.idxmax())]
+    peak_value = int(monthly_sales.max())
+    low_month = month_map[int(monthly_sales.idxmin())]
+    low_value = int(monthly_sales.min())
+    
     years_shown = f"{seasonality['Year'].min()}–{seasonality['Year'].max()}"
-    trend_text = f"Between **{years_shown}**, peak sales were in **{peak_month} (${peak_value:,.0f})**, while the lowest were in **{low_month} (${low_value:,.0f})**."
+    trend_text = (
+        f"Between **{years_shown}**, peak sales were in **{peak_month} "
+        f"(${peak_value:,.0f})**, while the lowest were in **{low_month} "
+        f"(${low_value:,.0f})**."
+    )
 else:
     trend_text = "No sales data available for the current selection."
 
@@ -88,7 +94,13 @@ else:
 if not profit_data.empty:
     top_item = profit_data.iloc[0]
     bottom_item = profit_data.iloc[-1]
-    profit_text = f"Top performer: **{top_item[0]}** (${top_item[1]:,.0f}). Biggest loss maker: **{bottom_item[0]}** (${bottom_item[1]:,.0f})."
+    top_name, top_value = str(top_item[0]), int(top_item[1])
+    bottom_name, bottom_value = str(bottom_item[0]), int(bottom_item[1])
+    
+    profit_text = (
+        f"Top performer: **{top_name}** (${top_value:,.0f}). "
+        f"Biggest loss maker: **{bottom_name}** (${bottom_value:,.0f})."
+    )
 else:
     profit_text = "No profitability data available for the current selection."
 
@@ -98,3 +110,5 @@ st.markdown(f"""
 - **Profitability:** {profit_text}  
 - **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.
 """)
+
+

@@ -67,6 +67,7 @@ fig2 = px.bar(profit_data, x="Profit", y=level,
               orientation="h")
 st.plotly_chart(fig2, use_container_width=True)
 
+
 # ===== 5) Insights =====
 st.subheader("🔎 Key Insights")
 
@@ -82,11 +83,7 @@ if not seasonality.empty:
     low_value = int(monthly_sales.min())
     
     years_shown = f"{seasonality['Year'].min()}–{seasonality['Year'].max()}"
-    trend_text = (
-        f"Between **{years_shown}**, peak sales were in **{peak_month} "
-        f"(${peak_value:,.0f})**, while the lowest were in **{low_month} "
-        f"(${low_value:,.0f})**."
-    )
+    trend_text = f"Between {years_shown}, peak sales were in {peak_month} (${peak_value:,}), while the lowest were in {low_month} (${low_value:,})."
 else:
     trend_text = "No sales data available for the current selection."
 
@@ -97,18 +94,17 @@ if not profit_data.empty:
     top_name, top_value = str(top_item[0]), int(top_item[1])
     bottom_name, bottom_value = str(bottom_item[0]), int(bottom_item[1])
     
-    profit_text = (
-        f"Top performer: **{top_name}** (${top_value:,.0f}). "
-        f"Biggest loss maker: **{bottom_name}** (${bottom_value:,.0f})."
-    )
+    profit_text = f"Top performer: {top_name} (${top_value:,}). Biggest loss maker: {bottom_name} (${bottom_value:,})."
 else:
     profit_text = "No profitability data available for the current selection."
 
-# --- Show results ---
+# --- Show results with proper markdown formatting ---
 st.markdown(f"""
-- **Seasonality:** {trend_text}  
-- **Profitability:** {profit_text}  
-- **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.
+• **Seasonality:** {trend_text}
+
+• **Profitability:** {profit_text}
+
+• **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.
 """)
 
 

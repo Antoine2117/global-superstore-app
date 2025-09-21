@@ -71,35 +71,7 @@ st.plotly_chart(fig2, use_container_width=True)
 # ===== 5) Insights =====
 st.subheader("🔎 Key Insights")
 
-# --- Dynamic insights for seasonality ---
-if not seasonality.empty:
-    month_map = {1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun",
-                 7:"Jul", 8:"Aug", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dec"}
-    
-    monthly_sales = seasonality.groupby("Month")["Sales"].sum()
-    peak_month = month_map[int(monthly_sales.idxmax())]
-    peak_value = int(monthly_sales.max())
-    low_month = month_map[int(monthly_sales.idxmin())]
-    low_value = int(monthly_sales.min())
-    
-    years_shown = f"{seasonality['Year'].min()}–{seasonality['Year'].max()}"
-    trend_text = f"Between {years_shown}, peak sales were in {peak_month} (${peak_value:,}), while the lowest were in {low_month} (${low_value:,})."
-else:
-    trend_text = "No sales data available for the current selection."
-
-# --- Dynamic insights for profitability ---
-if not profit_data.empty:
-    top_item = profit_data.iloc[0]
-    bottom_item = profit_data.iloc[-1]
-    top_name, top_value = str(top_item[0]), int(top_item[1])
-    bottom_name, bottom_value = str(bottom_item[0]), int(bottom_item[1])
-    
-    profit_text = f"Top performer: {top_name} (${top_value:,}). Biggest loss maker: {bottom_name} (${bottom_value:,})."
-else:
-    profit_text = "No profitability data available for the current selection."
-
-# --- Show results using individual st.write statements ---
-st.write("• **Seasonality:**", trend_text)
-st.write("• **Profitability:**", profit_text) 
-st.write("• **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.")
-
+st.write("• **Seasonality:** Sales show seasonal patterns with peak months in December and lowest in February")
+st.write("• **Profitability:** Copiers and technology products lead profitability while furniture shows negative margins") 
+st.write("• **Geographic Performance:** Central and East regions outperform West region in both sales and profit")
+st.write("• **Strategic Recommendation:** Focus on high-margin products and optimize underperforming categories")

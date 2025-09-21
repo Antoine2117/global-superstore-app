@@ -24,27 +24,35 @@ st.markdown("Explore **Seasonality** and **Profitability** interactively!")
 # ===== 3) Seasonality =====
 st.header("📅 Seasonality of Sales & Profit")
 
-# Year range selector
+# Year range slider
 min_year, max_year = int(orders["Year"].min()), int(orders["Year"].max())
 year_range = st.slider("Select Year Range:", min_year, max_year, (min_year, max_year))
 
-filtered = orders[(orders["Year"] >= year_range[0]) & (orders["Year"] <= year_range[1])]
+# Region filter
+regions = orders["Region"].unique().tolist()
+selected_regions = st.multiselect("Select Region(s):", regions, default=regions)
 
-# Group by Month + Year
+# Filter data
+filtered = orders[
+    (orders["Year"] >= year_range[0]) & 
+    (orders["Year"] <= year_range[1]) & 
+    (orders["Region"].isin(selected_regions))
+]
+
+# Group by Year + Month
 seasonality = filtered.groupby(["Year", orders["Order Date"].dt.month])["Sales"].sum().reset_index()
 seasonality.rename(columns={"Order Date": "Month"}, inplace=True)
 seasonality["Month"] = seasonality["Month"].astype(int)
 
-# Line chart with different colors per year
+# Plot with different colors per year
 fig1 = px.line(seasonality,
                x="Month", y="Sales", color="Year",
                markers=True,
-               title="Monthly Sales Trends by Year",
+               title=f"Monthly Sales Trends ({', '.join(selected_regions)})",
                labels={"Sales": "Sales (USD)", "Month": "Month"})
 fig1.update_layout(xaxis=dict(tickmode="linear", tick0=1, dtick=1))
 
 st.plotly_chart(fig1, use_container_width=True)
-
 
 # ===== 4) Profitability =====
 st.header("💰 Profitability Breakdown")
@@ -61,9 +69,31 @@ st.plotly_chart(fig2, use_container_width=True)
 
 # ===== 5) Insights =====
 st.subheader("🔎 Key Insights")
-st.markdown("""
-- **Seasonality:** Sales show strong peaks in certain months.
-- **Profitability:** Toggle between Category, Sub-Category, or Product.
-- **Strategic Use:** Spot loss leaders vs top performers.
+
+# --- Dynamic insights for seasonality ---
+if not seasonality.empty:
+    peak_month = seasonality.groupby("Month")["Sales"].sum().idxmax()
+    peak_value = seasonality.groupby("Month")["Sales"].sum().max()
+    min_month = seasonality.groupby("Month")["Sales"].sum().idxmin()
+    min_value = seasonality.groupby("Month")["Sales"].sum().min()
+    trend_years = seasonality["Year"].unique().tolist()
+    trend_text = f"Between {min(trend_years)} and {max(trend_years)}, the highest sales were in month {peak_month} (${peak_value:,.0f}), while the lowest were in month {min_month} (${min_value:,.0f})."
+else:
+    trend_text = "No sales data available for the current selection."
+
+# --- Dynamic insights for profitability ---
+if not profit_data.empty:
+    top_item = profit_data.iloc[0]
+    bottom_item = profit_data.iloc[-1]
+    profit_text = f"Top performer: **{top_item[0]}** (${top_item[1]:,.0f}). Biggest loss maker: **{bottom_item[0]}** (${bottom_item[1]:,.0f})."
+else:
+    profit_text = "No profitability data available for the current selection."
+
+# --- Show results ---
+st.markdown(f"""
+- **Seasonality:** {trend_text}  
+- **Profitability:** {profit_text}  
+- **Strategic Use:** Use these insights to prepare for seasonal peaks and address underperforming products.
 """)
+
 

@@ -98,13 +98,8 @@ if not profit_data.empty:
 else:
     profit_text = "No profitability data available for the current selection."
 
-# --- Show results with proper markdown formatting ---
-st.markdown(f"""
-• **Seasonality:** {trend_text}
-
-• **Profitability:** {profit_text}
-
-• **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.
-""")
-
+# --- Show results using individual st.write statements ---
+st.write("• **Seasonality:**", trend_text)
+st.write("• **Profitability:**", profit_text) 
+st.write("• **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.")
 

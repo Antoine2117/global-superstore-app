@@ -72,12 +72,15 @@ st.subheader("🔎 Key Insights")
 
 # --- Dynamic insights for seasonality ---
 if not seasonality.empty:
-    peak_month = seasonality.groupby("Month")["Sales"].sum().idxmax()
-    peak_value = seasonality.groupby("Month")["Sales"].sum().max()
-    min_month = seasonality.groupby("Month")["Sales"].sum().idxmin()
-    min_value = seasonality.groupby("Month")["Sales"].sum().min()
-    trend_years = seasonality["Year"].unique().tolist()
-    trend_text = f"Between {min(trend_years)} and {max(trend_years)}, the highest sales were in month {peak_month} (${peak_value:,.0f}), while the lowest were in month {min_month} (${min_value:,.0f})."
+    month_map = {1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun", 
+                 7:"Jul", 8:"Aug", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dec"}
+    monthly_sales = seasonality.groupby("Month")["Sales"].sum()
+    peak_month = month_map[monthly_sales.idxmax()]
+    peak_value = monthly_sales.max()
+    low_month = month_map[monthly_sales.idxmin()]
+    low_value = monthly_sales.min()
+    years_shown = f"{seasonality['Year'].min()}–{seasonality['Year'].max()}"
+    trend_text = f"Between **{years_shown}**, peak sales were in **{peak_month} (${peak_value:,.0f})**, while the lowest were in **{low_month} (${low_value:,.0f})**."
 else:
     trend_text = "No sales data available for the current selection."
 
@@ -93,7 +96,5 @@ else:
 st.markdown(f"""
 - **Seasonality:** {trend_text}  
 - **Profitability:** {profit_text}  
-- **Strategic Use:** Use these insights to prepare for seasonal peaks and address underperforming products.
+- **Strategic Use:** Prepare for peaks and address products/regions dragging profits down.
 """)
-
-

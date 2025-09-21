@@ -72,6 +72,5 @@ st.plotly_chart(fig2, use_container_width=True)
 st.subheader("🔎 Key Insights")
 
 st.write("• **Seasonality:** Sales show seasonal patterns with peak months in December and lowest in February")
-st.write("• **Profitability:** Copiers and technology products lead profitability while furniture shows negative margins") 
-st.write("• **Geographic Performance:** Central and East regions outperform West region in both sales and profit")
 st.write("• **Strategic Recommendation:** Focus on high-margin products and optimize underperforming categories")
+

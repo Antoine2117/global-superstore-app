@@ -19,21 +19,32 @@ orders["Month"] = orders["Order Date"].dt.to_period("M")
 # ===== 2) Page Config =====
 st.set_page_config(page_title="Global Superstore Insights", layout="wide")
 st.title("📊 Global Superstore Insights Dashboard")
-st.markdown("Explore **Seasonality** and **Profitability** interactively with Streamlit and Plotly.")
+st.markdown("Explore **Seasonality** and **Profitability** interactively!")
 
 # ===== 3) Seasonality =====
 st.header("📅 Seasonality of Sales & Profit")
-years = st.multiselect("Select Year(s):", sorted(orders["Year"].unique()), default=sorted(orders["Year"].unique()))
-filtered = orders[orders["Year"].isin(years)]
 
-monthly = filtered.groupby("Month")[["Sales","Profit"]].sum().reset_index()
-monthly["Month"] = monthly["Month"].astype(str)
+# Year range selector
+min_year, max_year = int(orders["Year"].min()), int(orders["Year"].max())
+year_range = st.slider("Select Year Range:", min_year, max_year, (min_year, max_year))
 
-fig1 = px.line(monthly, x="Month", y=["Sales","Profit"],
-               title="Monthly Sales & Profit Trends",
-               labels={"value":"USD", "variable":"Metric"},
-               markers=True)
+filtered = orders[(orders["Year"] >= year_range[0]) & (orders["Year"] <= year_range[1])]
+
+# Group by Month + Year
+seasonality = filtered.groupby(["Year", orders["Order Date"].dt.month])["Sales"].sum().reset_index()
+seasonality.rename(columns={"Order Date": "Month"}, inplace=True)
+seasonality["Month"] = seasonality["Month"].astype(int)
+
+# Line chart with different colors per year
+fig1 = px.line(seasonality,
+               x="Month", y="Sales", color="Year",
+               markers=True,
+               title="Monthly Sales Trends by Year",
+               labels={"Sales": "Sales (USD)", "Month": "Month"})
+fig1.update_layout(xaxis=dict(tickmode="linear", tick0=1, dtick=1))
+
 st.plotly_chart(fig1, use_container_width=True)
+
 
 # ===== 4) Profitability =====
 st.header("💰 Profitability Breakdown")
@@ -55,3 +66,4 @@ st.markdown("""
 - **Profitability:** Toggle between Category, Sub-Category, or Product.
 - **Strategic Use:** Spot loss leaders vs top performers.
 """)
+
